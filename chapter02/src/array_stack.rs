@@ -1,23 +1,22 @@
+use chapter01::interface::List;
 use std::{cmp::max, mem};
 
-use chapter01::interface::List;
-
-#[derive(Default, PartialEq, Debug)]
-pub struct Array<T> {
+#[derive(Clone, Default, PartialEq, Debug)]
+pub struct ArrayStack<T: Clone> {
     a: Box<[Option<T>]>,
     n: usize,
 }
 
-impl<T> Array<T> {
-    pub fn length(&self) -> usize {
+impl<T: Clone> ArrayStack<T> {
+    pub fn capacity(&self) -> usize {
         self.a.len()
     }
 
     pub fn new() -> Self {
-        Self::with_length(1)
+        Self::with_capacity(1)
     }
 
-    pub fn with_length(capacity: usize) -> Self {
+    pub fn with_capacity(capacity: usize) -> Self {
         Self {
             a: Self::allocate_in_heap(capacity),
             n: 0,
@@ -41,7 +40,7 @@ impl<T> Array<T> {
     }
 }
 
-impl<T: Clone> List<T> for Array<T> {
+impl<T: Clone> List<T> for ArrayStack<T> {
     fn size(&self) -> usize {
         self.n
     }
@@ -55,10 +54,11 @@ impl<T: Clone> List<T> for Array<T> {
     }
 
     fn add(&mut self, i: usize, x: T) {
-        if self.n + 1 > self.length() {
+        if self.n + 1 > self.capacity() {
             self.resize();
         }
 
+        // TODO: ここでi > nの場合はErrを返したい
         if i >= self.n {
             self.a[self.n] = Some(x);
         } else {
@@ -77,7 +77,7 @@ impl<T: Clone> List<T> for Array<T> {
             self.a[i..self.n].rotate_left(1);
             self.n -= 1;
 
-            if self.length() >= self.n * 3 {
+            if self.capacity() >= self.n * 3 {
                 self.resize();
             }
         }
@@ -87,12 +87,12 @@ impl<T: Clone> List<T> for Array<T> {
 
 #[cfg(test)]
 mod test {
-    use super::Array;
+    use super::ArrayStack;
     use chapter01::interface::List;
 
     #[test]
     fn test_array_stack() {
-        let mut stack: Array<i32> = Array::new();
+        let mut stack: ArrayStack<i32> = ArrayStack::new();
         assert_eq!(stack.size(), 0);
 
         stack.add(0, 1);
