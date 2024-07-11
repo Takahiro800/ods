@@ -11,6 +11,7 @@ pub trait Stack<T> {
 pub trait List<T> {
     fn size(&self) -> usize;
     fn get(&self, i: usize) -> Option<T>;
+    // TODO: Result<T, E>
     fn set(&mut self, i: usize, x: T) -> Option<T>;
     // TODO: Result<T, E>
     fn add(&mut self, i: usize, x: T);
